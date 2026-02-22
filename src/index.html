@@ -81,7 +81,21 @@
   })();
   </script> -->
 </head>
-<body>
+<body style="user-select: none;">
+  <audio id="backgroundSound" autoplay loop>
+    <source src="sounds/background.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <script>
+    const audio = document.getElementById('backgroundSound');
+    audio.volume = 0.25;
+    
+    // Block right-click context menu
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      return false;
+    });
+  </script>
   <app-root></app-root>
 </body>
 </html>
