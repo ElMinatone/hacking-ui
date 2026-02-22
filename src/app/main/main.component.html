@@ -2,10 +2,10 @@
   <div class="w-full max-w-5xl border-2 border-primary bg-terminal-bg relative shadow-[0_0_30px_rgba(31,244,207,0.2)]">
     <div class="bg-primary flex justify-between items-center px-4 py-1">
       <h1 class="text-background-dark font-display font-bold uppercase tracking-widest text-sm">
-        Replicate Target
+        Replicar Alvo
       </h1>
       <div class="flex gap-4">
-        <span class="text-background-dark font-bold cursor-pointer hover:opacity-70">Exit</span>
+        <span class="text-background-dark font-bold cursor-pointer hover:opacity-70 transition-opacity duration-200">Sair</span>
         <span class="text-background-dark font-bold cursor-pointer hover:opacity-70">X</span>
       </div>
     </div>
@@ -15,7 +15,7 @@
         <div class="space-y-2">
           <div class="flex items-center gap-2">
             <div class="w-2 h-2 bg-primary"></div>
-            <span class="text-primary text-xs uppercase tracking-widest">Time</span>
+            <span class="text-primary text-xs uppercase tracking-widest">Tempo</span>
           </div>
           <div class="text-6xl font-display text-primary tracking-tighter flicker">
             {{ getTimerText() }}
@@ -24,14 +24,14 @@
 
         <div class="grid grid-cols-4 gap-5 max-w-md">
           <div
-            class="fingerprint-card aspect-square border-2 border-primary p-2 relative cursor-pointer"
+            class="fingerprint-card aspect-square border-2 border-primary p-2 relative cursor-pointer hover:scale-105"
             *ngFor="let card of gridCards"
             [class.correct]="isCardCorrect(card)"
             [class.selected]="clickedGridIndices.has(card.gridIndex)"
-            [class.border]="card.gridIndex !== 0"
-            [class.border-primary/40]="card.gridIndex !== 0"
-            [class.hover:border-primary]="card.gridIndex !== 0"
-            [class.group]="card.gridIndex !== 0"
+            [class.border]="true"
+            [class.border-primary/40]="true"
+            [class.hover:border-primary]="true"
+            [class.group]="true"
             (click)="onCardClick(card)"
           >
             <ng-container *ngIf="clickedGridIndices.has(card.gridIndex)">
@@ -42,7 +42,7 @@
             </ng-container>
             <img
               [attr.alt]="'Fingerprint fragment ' + (card.gridIndex + 1)"
-              class="w-full h-full object-cover mix-blend-screen grayscale invert brightness-200 contrast-200 scale-[1.12] transition-transform duration-200"
+              class="w-full h-full max-h-16 object-cover mix-blend-screen grayscale invert brightness-200 contrast-200 scale-[1.12] transition-transform duration-200"
               [class.opacity-80]="card.gridIndex === 0"
               [class.opacity-60]="card.gridIndex !== 0"
               [class.group-hover:opacity-100]="card.gridIndex !== 0"
@@ -53,14 +53,14 @@
         </div>
 
         <div class="text-primary/70 text-xs space-y-2 pt-4 max-w-sm">
-          <p>Find the copies of the fingerprint you need.</p>
+          <p>Encontre as cópias da digital necessárias.</p>
           <p class="flex items-start gap-2">
             <span class="text-primary font-bold">&gt;</span>
-            <span>You are presented with only 4 activation attempts.</span>
+            <span>Você tem apenas 4 tentativas de ativação.</span>
           </p>
           <p class="flex items-start gap-2">
             <span class="text-primary font-bold">&gt;</span>
-            <span>After the time expires, access will be blocked for 24 hours.</span>
+            <span>Após o tempo expirar, o acesso será bloqueado por 24 horas.</span>
           </p>
         </div>
       </div>
@@ -68,8 +68,8 @@
       <div class="flex-1 flex flex-col">
         <div class="border border-primary/40 flex-1 relative overflow-hidden">
           <div class="absolute top-0 left-0 right-0 h-1 bg-primary/40"></div>
-          <div class="absolute top-0 left-1/2 -translate-x-1/2 px-4 py-1 bg-terminal-bg border border-primary/40 border-t-0 z-10">
-            <span class="text-primary text-[10px] uppercase tracking-widest whitespace-nowrap">Fingerprint</span>
+          <div class="absolute top-8 left-1/2 -translate-x-1/2 px-4 py-1 bg-terminal-bg border border-primary/40 border-t-0 z-10">
+            <span class="text-primary text-[10px] uppercase tracking-widest whitespace-nowrap">DIGITAL</span>
           </div>
           <div class="absolute top-8 left-8 w-6 h-6 border-t-2 border-l-2 border-primary"></div>
           <div class="absolute top-8 right-8 w-6 h-6 border-t-2 border-r-2 border-primary"></div>
@@ -80,7 +80,7 @@
             <div class="relative w-full h-full max-w-[300px] flex items-center justify-center">
               <img
                 alt="Target Fingerprint"
-                class="max-h-full opacity-80 mix-blend-screen grayscale invert brightness-200 contrast-200"
+                class="max-h-64 opacity-80 mix-blend-screen grayscale invert brightness-200 contrast-200"
                 [src]="fingerprints[targetFingerprint]"
               />
               <div class="scan-line"></div>
@@ -89,7 +89,7 @@
 
           <div class="absolute bottom-4 right-8 flex flex-col gap-2">
             <div class="flex items-center gap-4">
-              <span class="text-primary text-xs uppercase tracking-widest opacity-70">Progress</span>
+              <span class="text-primary text-xs uppercase tracking-widest opacity-70">Progresso</span>
               <div class="flex gap-2">
                 <div
                   class="w-4 h-4 border border-primary flex items-center justify-center"
@@ -100,7 +100,7 @@
               </div>
             </div>
             <div class="flex items-center gap-4">
-              <span class="text-primary text-xs uppercase tracking-widest opacity-70">Attempts</span>
+              <span class="text-primary text-xs uppercase tracking-widest opacity-70">Tentativas</span>
               <div class="flex gap-2">
                 <div
                   class="w-4 h-4 border border-primary flex items-center justify-center"
@@ -122,13 +122,13 @@
 
     <div class="border-t border-primary/20 p-2 px-8 flex justify-between items-center text-[10px] text-primary/40">
       <div class="flex gap-6">
-        <span>SYSTEM: ONLINE</span>
+        <span>SISTEMA: ONLINE</span>
         <span>DECRYPT: 24%</span>
-        <span>SECURITY: HIGH</span>
+        <span>SEGURANÇA: ALTA</span>
       </div>
       <div class="flex items-center gap-4">
         <span class="bg-primary/10 px-2 py-0.5 text-primary border border-primary/20">ESC</span>
-        <span>BACK</span>
+        <span>VOLTAR</span>
       </div>
     </div>
   </div>
@@ -140,8 +140,8 @@
 
   <div class="fixed inset-0 bg-terminal-bg/85 flex items-center justify-center z-40" *ngIf="isCompleted">
     <div class="w-[600px] border border-primary p-6 bg-terminal-bg shadow-[0_0_50px_rgba(31,244,207,0.25)] text-center space-y-4">
-      <div class="text-primary text-xs uppercase tracking-[0.35em]">Progress Complete</div>
-      <div class="text-5xl font-display text-primary tracking-widest glitch-text">ACCESS GRANTED</div>
+      <div class="text-primary text-xs uppercase tracking-[0.35em]">Progresso Completo</div>
+      <div class="text-5xl font-display text-primary tracking-widest glitch-text">ACESSO CONCEDIDO</div>
       <div class="text-primary/70 text-xs uppercase tracking-widest">5/5</div>
     </div>
   </div>
@@ -152,7 +152,7 @@
         <span class="text-background-dark text-xs font-bold tracking-[0.2em] uppercase">Fingerprint Analysis</span>
       </div>
       <div class="p-6 space-y-4">
-        <div class="text-primary text-center tracking-[0.3em] font-display text-lg uppercase flicker">Processing</div>
+        <div class="text-primary text-center tracking-[0.3em] font-display text-lg uppercase flicker">Processando</div>
         <div class="h-8 border border-primary relative overflow-hidden bg-black">
           <div class="absolute top-0 left-0 bottom-0 bg-primary/60 transition-all duration-100 ease-linear" [style.width.%]="loaderProgress"></div>
         </div>
@@ -161,10 +161,60 @@
   </div>
 
   <div class="fixed inset-0 bg-terminal-bg/85 flex items-center justify-center z-40" *ngIf="isGameOver">
-    <div class="w-[600px] border border-primary p-6 bg-terminal-bg shadow-[0_0_50px_rgba(31,244,207,0.25)] text-center space-y-4">
-      <div class="text-primary text-xs uppercase tracking-[0.35em]">Access Denied</div>
-      <div class="text-5xl font-display text-primary tracking-widest glitch-text">ACCESS DENIED</div>
-      <div class="text-primary/70 text-xs uppercase tracking-widest">Too Many Attempts</div>
+    <div class="w-full max-w-2xl bg-black border-[3px] border-red-500 neon-border crt-flicker relative">
+      <div class="scanline"></div>
+      <div class="bg-red-500 px-4 py-2 flex justify-between items-center">
+        <span class="text-black font-bold tracking-widest text-sm uppercase">Erro do Terminal — 0x000F4</span>
+        <span class="material-icons text-black text-xl cursor-not-allowed">close</span>
+      </div>
+      <div class="p-10 flex flex-col items-center text-center space-y-6">
+        <div class="mb-2">
+          <span class="material-icons text-red-500 text-8xl animate-pulse">report_problem</span>
+        </div>
+        <h1 class="text-red-500 text-6xl md:text-7xl font-extrabold tracking-tighter glitch-text uppercase font-display">
+          Acesso Negado
+        </h1>
+        <div class="w-24 h-1 bg-red-500"></div>
+        <div class="space-y-4 max-w-md">
+          <p class="text-red-500 text-xl font-bold tracking-wide uppercase">
+            Intrusão Detectada
+          </p>
+          <p class="text-red-500/80 text-sm leading-relaxed font-mono">
+            Tentativa de acesso não autorizada registrada do nó remoto. Chaves de criptografia locais foram purgadas. Protocolo de bloqueio do sistema <span class="underline">X-RAY-9</span> iniciado.
+          </p>
+          <p class="text-red-500/60 text-xs italic">
+            ID do Nó: 218.45.1.99 | Nível de Rastreamento: Crítico
+          </p>
+        </div>
+        <div class="bg-red-500/10 border border-red-500/30 p-4 w-full mt-6">
+          <div class="flex justify-between items-center text-xs text-red-500 font-bold mb-2">
+            <span>LIMPEZA DO SISTEMA EM ANDAMENTO</span>
+            <span>84% COMPLETO</span>
+          </div>
+          <div class="w-full h-1 bg-red-500/20 overflow-hidden relative">
+            <div class="absolute inset-0 bg-red-500 w-4/5"></div>
+          </div>
+        </div>
+        <div class="pt-8 w-full flex justify-center gap-4">
+          <button class="px-10 py-3 bg-red-500 text-black font-bold uppercase tracking-widest hover:bg-white transition-colors duration-200 flex items-center gap-2 group">
+            <span class="material-icons text-sm group-hover:rotate-90 transition-transform">logout</span>
+            Sair do Terminal
+          </button>
+          <button class="px-6 py-3 border border-red-500 text-red-500 font-bold uppercase tracking-widest hover:bg-red-500/10 transition-colors duration-200">
+            Diagnósticos
+          </button>
+        </div>
+      </div>
+      <div class="border-t border-red-500/30 px-4 py-2 flex justify-between items-center text-[10px] text-red-500/50">
+        <div class="flex gap-4">
+          <span>NÍVEL_DE_SEGURANÇA: 10</span>
+          <span>CRIPTOGRAFIA: AES-256-GCM</span>
+        </div>
+        <div class="flex gap-2">
+          <div class="w-2 h-2 bg-red-500 animate-ping"></div>
+          <span>ALERTA_ATIVO</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>

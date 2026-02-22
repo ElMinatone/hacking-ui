@@ -16,12 +16,14 @@ type GridCard = {
 })
 export class MainComponent implements OnInit, OnDestroy {
   protected readonly fingerprints: string[] = [
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuDVpHOxD_U-CB2cKtO0CqYAm4gK1LrfiDCAYU4VgHlQ3LpY00azQCD5_oCqKqVzs61jLbVGjQcLHhfhC5KEOSM-oKfXnKnJBIYjntWgusA3K7XiqpDpwvRtfLf8C9zAiEXHj54mbiltCbt-K3hyXK0o6FPfFg4ahw6ULqF2SQ1wj7hAbLRSz-mABoA_SGwwBTu4Il4czIxdPB4qPYNIGMqc5QaMaDTgSt4wzYGp1vZ6GDkE6xXIePwmA45DtFFtOjQovcpbKgnF0TE',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuAEvXmIzUlgoEfkzE-NZQYKhkAeGKrSpTuPF_lg3YpX3pWKoY3MIudwM2mQyydVDs7Oc2E_Lnfkrymhvm-xWThvA2wF0ecyc4qMFZ0NafYWKtrjwd2zOEUUxpP-1YXbCfhjNRSmr0RdTquVM47RgQ39FX6KWOOfQCq79QCOUW6yOLGLbIX1r00wxNqphnhYBQ9JgvXY6c92B3cO9G2ZJoyHwjdemNxpnRaaxB3iTqbp5C4D6GGaDHBlwDQbZ-Tw6I-Wj0QpsmwvCnI',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuCR86oUQ-rnP6pQ8e5B3FL8LliNjeW-8OUWo-kgEbF9O3JYjPeY9cHft9QsyS4sYXiQ2iSWZlc_kPiO68q2KstExJhjZM1nkBqYs2RUb5ZEL79_6-dRhXyP_BFQ6KLjKzL41_QBIxlpV-aM5uR0LbzV--0up5TnhPDN71GbyrziMQWIRMbBj30kLagIEowblz06HOJBN9W7kRk3ezzVt4XAGcXT0XvV9FmILzcueJqpXCvggiGHCfChhVSTxXZ7v478bcjs9BBhLTo',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuB8HL0hAQ5kPMCaPhDpOw-l0oH77pzxkxOY1FcpUv_LcjB8ZKRazm_xNKElXXIP47k_5B_sMEGXx2_85EHcWrQnv4tZZJRU9iz3VXZbegL3t2uAN3JbD7DIzwhvym2mISs_1zdohpCfrb17QcUgtE2kIkrqvmWVnvTCoT_HrOlNLMeTpWSh3dXUlio0Y-IGVaSHQ_brYeh8aC_AwWYa0WdjDhdBZ2xZmI128VdyKwygP15or_b8_MLL-6lxIVVxp0ehwRASBncTP6Y',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuD2dDE2HW_h7ELzax5KKS01EUpQ6wTViXC9NDhJbNMjsRUMuyZZb3RUhcQdRVdJMn_qlePituKqdSX2AazOus4QncaFY47x14Bo8bqxu0g75JuWBGUwOHRn3QEVIfUXncIoJp08XrFspsdQjGZoqFFzwEIl1uxufWViU5BVnza4D7HufSsjMpvF2tLfcNkO5IKf3oToUIEekddjKN7sx_Xa59MzreSubRDvlv2pgrnPAW_JLFtoeLM9--br7auanqHSTlBwbQUkNE4',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuCkVwK4w6gVJRx709ekEk7nEIykukBlTXScE38xdR6CrR1VOyIRNJMcTFmrfyqaGkt_sH_DxvXkd6iM5O1Cwdsv0J65NwIERCUYALNgcs_fG7PXzgnxmb-lB5w95bvN64Ecqg1xIaaf0xXHt1LNM9wG1UVVElK8167IMKwi9kmpvASLfH387suSI8d7ZAcXzSQ6ZbENhUqyfgmebBssf20zx-nXBgjuGGykqne56oWj-uj143Sp2rcWw4cz8GJT_K5G2zWvdMih4dE',
+    'images/finger1.png',
+    'images/finger2.png',
+    'images/finger3.png',
+    'images/finger4.png',
+    'images/finger5.png',
+    'images/finger6.png',
+    'images/finger7.png',
+    'images/finger8.png',
   ];
 
   protected targetFingerprint = 0;
@@ -44,6 +46,8 @@ export class MainComponent implements OnInit, OnDestroy {
 
   protected clickedGridIndices = new Set<number>();
 
+  private lastTargetFingerprint: number | null = null;
+
   private timerIntervalId: number | null = null;
   private loaderIntervalId: number | null = null;
 
@@ -65,9 +69,9 @@ export class MainComponent implements OnInit, OnDestroy {
   protected onCardClick(card: GridCard): void {
     if (!this.isPlaying) return;
 
-    this.clickedGridIndices.add(card.gridIndex);
-
     if (card.fpIndex === this.targetFingerprint) {
+      this.clickedGridIndices.add(card.gridIndex);
+      
       if (!this.correctGridIndices.has(card.gridIndex)) {
         this.correctGridIndices.add(card.gridIndex);
       }
@@ -103,6 +107,15 @@ export class MainComponent implements OnInit, OnDestroy {
   private startGame(): void {
     if (this.isPlaying) return;
 
+    if (this.usedAttempts >= this.totalAttempts) {
+      this.isGameOver = true;
+      setTimeout(() => {
+        this.isGameOver = false;
+        this.startLoader();
+      }, 5000);
+      return;
+    }
+
     this.isPlaying = true;
     this.correctGridIndices.clear();
 
@@ -136,6 +149,21 @@ export class MainComponent implements OnInit, OnDestroy {
       this.isCompleted = true;
       this.stopTimer();
       this.isPlaying = false;
+
+      // Send success result
+      fetch(`https://${(window as any).GetParentResourceName()}/hackResult`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          result: 'success'
+        })
+      });
+
+      // Wait 2 seconds then hide completion modal
+      setTimeout(() => {
+        this.isCompleted = false;
+        this.startLoader();
+      }, 2000);
       return;
     }
 
@@ -148,8 +176,17 @@ export class MainComponent implements OnInit, OnDestroy {
 
     if (this.isCompleted) return;
 
-    // Timeout: just reset round, don't consume attempt
-    this.resetRound();
+    // Timeout: consume attempt
+    this.consumeAttempt();
+    if (this.usedAttempts >= this.totalAttempts) {
+      this.isGameOver = true;
+      setTimeout(() => {
+        this.isGameOver = false;
+        this.startLoader();
+      }, 5000);
+    } else {
+      this.resetRound();
+    }
   }
 
   private resetRound(): void {
@@ -166,11 +203,20 @@ export class MainComponent implements OnInit, OnDestroy {
     this.usedAttempts++;
 
     if (this.usedAttempts >= this.totalAttempts) {
-      // No more attempts: game over
+      // No more attempts: show access denied modal immediately
       this.isGameOver = true;
+      
+      // Send failed result
+      fetch(`https://${(window as any).GetParentResourceName()}/hackResult`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          result: 'failed'
+        })
+      });
+
       setTimeout(() => {
         this.isGameOver = false;
-        // Restart from loader
         this.startLoader();
       }, 5000);
     } else {
@@ -184,9 +230,26 @@ export class MainComponent implements OnInit, OnDestroy {
 
     this.clickedGridIndices.clear();
 
-    this.targetFingerprint = Math.floor(Math.random() * this.fingerprints.length);
+    const getRandomFingerprintExcluding = (exclude: number | null): number => {
+      let candidates = Array.from({length: this.fingerprints.length}, (_, i) => i);
+      if (exclude !== null) {
+        candidates = candidates.filter(i => i !== exclude);
+      }
+      return candidates[Math.floor(Math.random() * candidates.length)];
+    };
 
-    const gridIndices: number[] = [];
+    const shuffleArray = <T>(array: T[]): T[] => {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    };
+
+    this.targetFingerprint = getRandomFingerprintExcluding(this.lastTargetFingerprint);
+    this.lastTargetFingerprint = this.targetFingerprint;
+
+    let gridIndices: number[] = [];
     const targetCopies = 3 + Math.floor(Math.random() * 2);
     for (let i = 0; i < targetCopies; i += 1) {
       gridIndices.push(this.targetFingerprint);
@@ -200,7 +263,7 @@ export class MainComponent implements OnInit, OnDestroy {
       gridIndices.push(randomIndex);
     }
 
-    gridIndices.sort(() => Math.random() - 0.5);
+    gridIndices = shuffleArray(gridIndices);
 
     this.gridCards = gridIndices.map((fpIndex, gridIndex) => ({ fpIndex, gridIndex }));
 

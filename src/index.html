@@ -8,6 +8,7 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -30,6 +31,55 @@
       }
     };
   </script>
+  <!-- <script>
+  (function () {
+    const html = document.documentElement
+    const body = document.body
+    const root = document.querySelector('app-root')
+    let isOpen = false
+    const forceHide = () => {
+      if (!isOpen) {
+        html.classList.remove('nui-open')
+        body.style.display = 'none'
+        body.style.opacity = '0'
+        body.style.visibility = 'hidden'
+        body.style.pointerEvents = 'none'
+        if (root) {
+          root.style.display = 'none'
+          root.style.opacity = '0'
+          root.style.visibility = 'hidden'
+          root.style.pointerEvents = 'none'
+        }
+      }
+    }
+    const show = () => {
+      isOpen = true
+      html.classList.add('nui-open')
+      body.style.removeProperty('display')
+      body.style.removeProperty('opacity')
+      body.style.removeProperty('visibility')
+      body.style.removeProperty('pointer-events')
+      if (root) {
+        root.style.removeProperty('display')
+        root.style.removeProperty('opacity')
+        root.style.removeProperty('visibility')
+        root.style.removeProperty('pointer-events')
+      }
+    }
+    const hide = () => { isOpen = false; forceHide() }
+    hide()
+    const mo = new MutationObserver(forceHide)
+    mo.observe(body, { attributes: true, attributeFilter: ['style', 'class'] })
+    if (root) mo.observe(root, { attributes: true, attributeFilter: ['style', 'class'] })
+    window.addEventListener('load', forceHide)
+    document.addEventListener('DOMContentLoaded', forceHide)
+    window.addEventListener('message', function (event) {
+      const data = event && event.data ? event.data : {}
+      if (data.action === 'open') { show() }
+      if (data.action === 'close') { hide() }
+    })
+  })();
+  </script> -->
 </head>
 <body>
   <app-root></app-root>
