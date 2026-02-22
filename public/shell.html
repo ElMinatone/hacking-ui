@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Hacking Shell</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html, body { height: 100%; margin: 0; background: transparent !important; }
+    body.visible { background: #050a0a !important; }
+    #gameContainer { position: fixed; inset: 0; }
+  </style>
+  <script>
+    let iframeRef = null;
+    function show() {
+      document.body.style.display = 'block';
+      document.body.classList.add('visible');
+    }
+    function hide() {
+      document.body.classList.remove('visible');
+      document.body.style.display = 'none';
+    }
+    function startHack() {
+      const container = document.getElementById('gameContainer');
+      container.innerHTML = '';
+      iframeRef = document.createElement('iframe');
+      iframeRef.src = 'index.html';
+      iframeRef.style.width = '100%';
+      iframeRef.style.height = '100%';
+      iframeRef.style.border = 'none';
+      iframeRef.addEventListener('load', () => {
+        try {
+          if (typeof GetParentResourceName === 'function') {
+            iframeRef.contentWindow.GetParentResourceName = function () { return GetParentResourceName(); };
+          }
+        } catch (e) {}
+        try { iframeRef.contentWindow.postMessage({ action: 'startHack' }, '*'); } catch (e) {}
+      });
+      container.appendChild(iframeRef);
+      show();
+    }
+    function stopHack() {
+      const container = document.getElementById('gameContainer');
+      container.innerHTML = '';
+      document.querySelectorAll('audio').forEach(a => { try { a.pause(); a.currentTime = 0; } catch (e) {} });
+      iframeRef = null;
+      hide();
+    }
+    function sendNui(name, payload) {
+      try {
+        if (typeof GetParentResourceName === 'function') {
+          const res = GetParentResourceName();
+          return fetch('https://' + res + '/' + name, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload || {})
+          });
+        }
+      } catch (e) {}
+      return Promise.resolve();
+    }
+    window.addEventListener('message', function (event) {
+      if (!event.data) return;
+      if (event.data.action === 'startHack') startHack();
+      if (event.data.action === 'forceClose') stopHack();
+      if (event.data && event.data.type === 'hackResult') {
+        sendNui('hackResult', { result: event.data.result || 'failed' }).then(() => {
+          stopHack();
+        });
+      }
+    });
+  </script>
+</head>
+<body style="display:none; user-select:none;">
+  <div id="gameContainer"></div>
+</body>
+</html>

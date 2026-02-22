@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:fivem": "ng build --configuration production --base-href ./ --deploy-url ./ && node scripts/uncomment-html.js",
+    "build:fivem": "ng build --configuration production --base-href ./ --deploy-url ./ && node scripts/uncomment-html.js && node scripts/copy-to-nui.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

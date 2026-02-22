@@ -61,19 +61,17 @@ export class MainComponent implements OnInit, OnDestroy {
   constructor(private audioController: AudioController) {}
 
   ngOnInit(): void {
-    this.startLoader();
-
     window.addEventListener('message', (event) => {
 
       if (!event.data) return;
 
       // Evento vindo do Lua
       if (event.data.action === 'startHack') {
-        this.resetGame();
+        this.startSession();
       }
 
       if (event.data.action === 'forceClose') {
-        this.resetGame();
+        this.endSession();
       }
 
     });
@@ -122,38 +120,45 @@ export class MainComponent implements OnInit, OnDestroy {
     return '0.6';
   }
 
-  // Reset game function - restarts the entire game from the beginning
-  protected resetGame(): void {
+  // Prepara estado inicial do jogo (não inicia loader automaticamente)
+  protected resetState(): void {
     this.stopTimer();
     this.stopLoader();
     
-    // Reset all game states
+    // Estado base
     this.progress = 0;
     this.usedAttempts = 0;
     this.isPlaying = false;
     this.isGameOver = false;
     this.isCompleted = false;
     this.loaderProgress = 0;
-    this.isLoading = true;
+    this.isLoading = false;
     
-    // Clear all sets
+    // Limpa coleções
     this.correctGridIndices.clear();
     this.clickedGridIndices.clear();
     
-    // Reset timer and rounds
+    // Timer e rodada
     this.remainingMs = this.roundDurationMs;
     this.lastTargetFingerprint = null;
     this.gridCards = [];
+  }
 
-    const audio = document.getElementById('backgroundSound') as HTMLAudioElement;
-    if (audio) {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.play().catch(() => {});
-    }
-    
-    // Start the loader again
+  // Inicia uma nova sessão do minigame (reset + loader + áudio)
+  protected startSession(): void {
+    this.resetState();
+    this.isLoading = true;
+    this.audioController.stopAll();
+    this.audioController.play('background');
     this.startLoader();
+  }
+
+  // Finaliza a sessão atual (para timers, limpa estado e áudios)
+  protected endSession(): void {
+    this.stopTimer();
+    this.stopLoader();
+    this.audioController.stopAll();
+    this.resetState();
   }
 
   private startGame(): void {
@@ -192,6 +197,27 @@ export class MainComponent implements OnInit, OnDestroy {
     }
   }
 
+  private sendHackResult(result: 'success' | 'failed'): void {
+    const anyWin: any = window as any;
+    try {
+      if (typeof anyWin.GetParentResourceName === 'function') {
+        const res = anyWin.GetParentResourceName();
+        fetch(`https://${res}/hackResult`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ result })
+        }).catch(() => {
+          window.parent?.postMessage({ type: 'hackResult', result }, '*');
+        });
+        return;
+      }
+    } catch (e) {}
+    try {
+      window.parent?.postMessage({ type: 'hackResult', result }, '*');
+    } catch (e) {}
+  }
+
+
   private onGameWon(): void {
     this.stopTimer();
     this.isPlaying = false;
@@ -202,26 +228,16 @@ export class MainComponent implements OnInit, OnDestroy {
       this.stopTimer();
       this.isPlaying = false;
 
-      // Play victory sound for final completion
       this.audioController.play('victory');
 
-      // Send success result after 3 seconds
       setTimeout(() => {
-        console.log('Sending success result');
-        fetch(`https://${(window as any).GetParentResourceName()}/hackResult`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            result: 'success'
-          })
-        });
+        this.sendHackResult('success');
       }, 3000);
 
-      // Wait 2 seconds then hide completion modal
       setTimeout(() => {
         this.isCompleted = false;
         this.startLoader();
-      }, 2000);
+      }, 3000);
       return;
     }
 
@@ -263,23 +279,12 @@ export class MainComponent implements OnInit, OnDestroy {
   private consumeAttempt(): void {
     this.usedAttempts++;
 
-    // Play wrong click sound immediately
     this.audioController.play('click-wrong');
 
     if (this.usedAttempts >= this.totalAttempts) {
-      // No more attempts: show access denied modal immediately
       this.isGameOver = true;
-      
-      // Send failed result after 3 seconds
       setTimeout(() => {
-        console.log('Sending failed result');
-        fetch(`https://${(window as any).GetParentResourceName()}/hackResult`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            result: 'failed'
-          })
-        });
+        this.sendHackResult('failed');
       }, 3000);
 
       setTimeout(() => {

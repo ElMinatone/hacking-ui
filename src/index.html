@@ -39,49 +39,43 @@
 <body style="display:none; user-select:none;">
 
   <script>
-    // Flag global controlando visibilidade
     window.__NUI_VISIBLE = false;
-
     function showNui() {
       window.__NUI_VISIBLE = true;
-
       document.body.style.display = "block";
       document.body.classList.add("visible");
-
-      // Reinicia todos audios nativos se existirem
-      document.querySelectorAll("audio").forEach(a => {
-        a.pause();
-        a.currentTime = 0;
-      });
+      document.querySelectorAll("audio").forEach(a => { a.pause(); a.currentTime = 0; });
     }
-
     function hideNui() {
       window.__NUI_VISIBLE = false;
-
       document.body.classList.remove("visible");
       document.body.style.display = "none";
-
-      // Mata todos audios da página
-      document.querySelectorAll("audio").forEach(a => {
-        a.pause();
-        a.currentTime = 0;
-      });
+      document.querySelectorAll("audio").forEach(a => { a.pause(); a.currentTime = 0; });
     }
-
     window.addEventListener("message", function (event) {
       if (!event.data) return;
-
-      if (event.data.action === "startHack") {
-        showNui();
-      }
-
-      if (event.data.action === "forceClose") {
-        hideNui();
-      }
+      if (event.data.action === "startHack") { showNui(); }
+      if (event.data.action === "forceClose") { hideNui(); }
     });
   </script>
 
   <app-root></app-root>
+
+  <script>
+    window.addEventListener('load', function () {
+      let pending = false;
+      try {
+        pending = sessionStorage.getItem('pendingStart') === '1';
+      } catch { pending = false; }
+      if (pending) {
+        try { sessionStorage.removeItem('pendingStart'); } catch {}
+        showNui();
+        setTimeout(() => {
+          window.postMessage({ action: 'startHack' }, '*');
+        }, 0);
+      }
+    });
+  </script>
 
 </body>
 
