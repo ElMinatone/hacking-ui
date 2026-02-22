@@ -1,6 +1,8 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ModalService } from '../modal.service';
+import { AudioController } from '../services/audio-controller.service';
+import { AccessDeniedModalComponent } from '../components/access-denied-modal/access-denied-modal.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 type GridCard = {
   fpIndex: number;
@@ -10,9 +12,10 @@ type GridCard = {
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AccessDeniedModalComponent],
   templateUrl: './main.component.html',
-  styleUrl: './main.component.scss'
+  styleUrls: ['./main.component.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class MainComponent implements OnInit, OnDestroy {
   protected readonly fingerprints: string[] = [
@@ -55,7 +58,7 @@ export class MainComponent implements OnInit, OnDestroy {
   private roundEndsAt = 0;
   private remainingMs = this.roundDurationMs;
 
-  constructor(private modalService: ModalService) {}
+  constructor(private audioController: AudioController) {}
 
   ngOnInit(): void {
     this.startLoader();
@@ -150,6 +153,9 @@ export class MainComponent implements OnInit, OnDestroy {
       this.stopTimer();
       this.isPlaying = false;
 
+      // Play success sound
+      this.audioController.play('click-success');
+
       // Send success result
       fetch(`https://${(window as any).GetParentResourceName()}/hackResult`, {
         method: 'POST',
@@ -166,6 +172,9 @@ export class MainComponent implements OnInit, OnDestroy {
       }, 2000);
       return;
     }
+
+    // Play success sound for progress
+    this.audioController.play('click-success');
 
     this.setupNewRound();
   }
@@ -201,6 +210,9 @@ export class MainComponent implements OnInit, OnDestroy {
 
   private consumeAttempt(): void {
     this.usedAttempts++;
+
+    // Play wrong click sound
+    this.audioController.play('click-wrong');
 
     if (this.usedAttempts >= this.totalAttempts) {
       // No more attempts: show access denied modal immediately
