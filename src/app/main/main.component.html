@@ -136,13 +136,7 @@
     <div class="absolute bottom-10 right-10 text-primary text-xs">UPLINK_STABLE: 124.5 MS</div>
   </div>
 
-  <div class="fixed inset-0 bg-terminal-bg/85 flex items-center justify-center z-40" *ngIf="isCompleted">
-    <div class="w-[600px] border border-primary p-6 bg-terminal-bg shadow-[0_0_50px_rgba(31,244,207,0.25)] text-center space-y-4">
-      <div class="text-primary text-xs uppercase tracking-[0.35em]">Progresso Completo</div>
-      <div class="text-5xl font-display text-primary tracking-widest glitch-text">ACESSO CONCEDIDO</div>
-      <div class="text-primary/70 text-xs uppercase tracking-widest">5/5</div>
-    </div>
-  </div>
+  <app-access-granted-modal [visible]="isCompleted" [closing]="isSuccessClosing"></app-access-granted-modal>
 
   <div class="fixed inset-0 bg-terminal-bg/80 flex items-center justify-center z-50" *ngIf="isLoading">
     <div class="w-96 border border-primary p-px bg-terminal-bg shadow-[0_0_50px_rgba(31,244,207,0.3)]">
@@ -158,5 +152,5 @@
     </div>
   </div>
 
-  <app-access-denied-modal [visible]="isGameOver" (modalClosed)="onGameOver()"></app-access-denied-modal>
+  <app-access-denied-modal [visible]="isGameOver" [closing]="isFailureClosing" (modalClosed)="onGameOver()"></app-access-denied-modal>
 </div>

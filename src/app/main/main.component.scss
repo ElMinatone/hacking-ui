@@ -38,3 +38,12 @@
 .glitch-text {
   text-shadow: 2px 0 #ef4444, -2px 0 #00FFD1;
 }
+
+@keyframes windowOpen {
+  0% { transform: scale(0.85) rotate(8deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes windowClose {
+  0% { transform: scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: scale(0.85) rotate(-8deg); opacity: 0; }
+}

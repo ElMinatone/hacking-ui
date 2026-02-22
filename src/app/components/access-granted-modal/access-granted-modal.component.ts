@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, Input } from '@angular/core';
 
 @Component({
   selector: 'app-access-granted-modal',
@@ -8,6 +8,8 @@ import { Component, EventEmitter, Output } from '@angular/core';
   styleUrls: ['./access-granted-modal.component.scss']
 })
 export class AccessGrantedModalComponent {
+  @Input() visible = false;
+  @Input() closing = false;
   @Output() closeModal = new EventEmitter<void>();
   @Output() enterSystem = new EventEmitter<void>();
   @Output() viewLogs = new EventEmitter<void>();

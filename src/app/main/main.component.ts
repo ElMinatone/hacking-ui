@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AudioController } from '../services/audio-controller.service';
 import { AccessDeniedModalComponent } from '../components/access-denied-modal/access-denied-modal.component';
+import { AccessGrantedModalComponent } from '../components/access-granted-modal/access-granted-modal.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 type GridCard = {
@@ -12,7 +13,7 @@ type GridCard = {
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [CommonModule, AccessDeniedModalComponent],
+  imports: [CommonModule, AccessDeniedModalComponent, AccessGrantedModalComponent],
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -37,12 +38,14 @@ export class MainComponent implements OnInit, OnDestroy {
   protected progress = 0;
   protected readonly requiredProgress = 5;
   protected isCompleted = false;
+  protected isSuccessClosing = false;
 
   protected totalAttempts = 3;
   protected usedAttempts = 0;
 
   protected isLoading = true;
   protected isGameOver = false;
+  protected isFailureClosing = false;
   protected loaderProgress = 0;
 
   protected correctGridIndices = new Set<number>();
@@ -231,13 +234,14 @@ export class MainComponent implements OnInit, OnDestroy {
       this.audioController.play('victory');
 
       setTimeout(() => {
-        this.sendHackResult('success');
-      }, 3000);
-
+        this.isSuccessClosing = true;
+      }, 1500);
       setTimeout(() => {
+        this.sendHackResult('success');
         this.isCompleted = false;
+        this.isSuccessClosing = false;
         this.startLoader();
-      }, 3000);
+      }, 4000);
       return;
     }
 
@@ -284,13 +288,14 @@ export class MainComponent implements OnInit, OnDestroy {
     if (this.usedAttempts >= this.totalAttempts) {
       this.isGameOver = true;
       setTimeout(() => {
-        this.sendHackResult('failed');
-      }, 3000);
-
+        this.isFailureClosing = true;
+      }, 1500);
       setTimeout(() => {
+        this.sendHackResult('failed');
         this.isGameOver = false;
+        this.isFailureClosing = false;
         this.startLoader();
-      }, 5000);
+      }, 4000);
     } else {
       // Still have attempts: reset round
       this.resetRound();

@@ -6,8 +6,8 @@ import { AudioController } from '../../services/audio-controller.service';
   standalone: true,
   imports: [],
   template: `
-    <div class="fixed inset-0 bg-terminal-bg/90 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-all duration-700" [class.opacity-100]="visible" [class.pointer-events-auto]="visible">
-      <div class="w-[600px] border-2 border-red-500 bg-terminal-bg relative shadow-[0_0_50px_rgba(239,68,68,0.3)] p-6 space-y-6 transform scale-0 rotate-12 transition-all duration-700" [class.scale-100]="visible" [class.rotate-0]="visible" [style.animation]="visible ? 'windowOpen 0.5s ease-out forwards' : 'none'">
+    <div class="fixed inset-0 bg-terminal-bg/90 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-all duration-700" [class.opacity-100]="visible || closing" [class.pointer-events-auto]="visible || closing">
+      <div class="w-[600px] border-2 border-red-500 bg-terminal-bg relative shadow-[0_0_50px_rgba(239,68,68,0.3)] p-6 space-y-6 transform scale-0 rotate-12 transition-all duration-700" [class.scale-100]="visible" [class.rotate-0]="visible" [style.animation]="closing ? 'windowClose 0.5s ease-in forwards' : (visible ? 'windowOpen 0.5s ease-out forwards' : 'none')">
         <div class="bg-red-500 flex justify-between items-center px-4 py-1">
           <h1 class="text-background-dark font-display font-bold uppercase tracking-widest text-sm">TERMINAL ERROR — 0X000F4</h1>
           <div class="flex gap-4">
@@ -93,6 +93,16 @@ import { AudioController } from '../../services/audio-controller.service';
         opacity: 1;
       }
     }
+    @keyframes windowClose {
+      0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(0.7) rotate(-12deg);
+        opacity: 0;
+      }
+    }
     
     @keyframes glitch2 {
       0%, 100% {
@@ -163,6 +173,7 @@ import { AudioController } from '../../services/audio-controller.service';
 })
 export class AccessDeniedModalComponent {
   @Input() visible = false;
+  @Input() closing = false;
   @Output() closeModal = new EventEmitter<void>();
   @Output() exitTerminal = new EventEmitter<void>();
   @Output() runDiagnostics = new EventEmitter<void>();
