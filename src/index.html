@@ -31,55 +31,6 @@
       }
     };
   </script>
-  <!-- <script>
-  (function () {
-    const html = document.documentElement
-    const body = document.body
-    const root = document.querySelector('app-root')
-    let isOpen = false
-    const forceHide = () => {
-      if (!isOpen) {
-        html.classList.remove('nui-open')
-        body.style.display = 'none'
-        body.style.opacity = '0'
-        body.style.visibility = 'hidden'
-        body.style.pointerEvents = 'none'
-        if (root) {
-          root.style.display = 'none'
-          root.style.opacity = '0'
-          root.style.visibility = 'hidden'
-          root.style.pointerEvents = 'none'
-        }
-      }
-    }
-    const show = () => {
-      isOpen = true
-      html.classList.add('nui-open')
-      body.style.removeProperty('display')
-      body.style.removeProperty('opacity')
-      body.style.removeProperty('visibility')
-      body.style.removeProperty('pointer-events')
-      if (root) {
-        root.style.removeProperty('display')
-        root.style.removeProperty('opacity')
-        root.style.removeProperty('visibility')
-        root.style.removeProperty('pointer-events')
-      }
-    }
-    const hide = () => { isOpen = false; forceHide() }
-    hide()
-    const mo = new MutationObserver(forceHide)
-    mo.observe(body, { attributes: true, attributeFilter: ['style', 'class'] })
-    if (root) mo.observe(root, { attributes: true, attributeFilter: ['style', 'class'] })
-    window.addEventListener('load', forceHide)
-    document.addEventListener('DOMContentLoaded', forceHide)
-    window.addEventListener('message', function (event) {
-      const data = event && event.data ? event.data : {}
-      if (data.action === 'open') { show() }
-      if (data.action === 'close') { hide() }
-    })
-  })();
-  </script> -->
 </head>
 <body style="user-select: none;">
   <audio id="backgroundSound" autoplay loop>
@@ -87,8 +38,17 @@
     Your browser does not support the audio element.
   </audio>
   <script>
+    // Audio volumes configuration
+    window.audioVolumes = {
+      'background': 0.22,
+      'click-success': 0.16,
+      'click-wrong': 0.6,
+      'failure': 0.7,
+      'victory': 0.8
+    };
+    
     const audio = document.getElementById('backgroundSound');
-    audio.volume = 0.22;
+    audio.volume = window.audioVolumes['background'];
     
     // Block right-click context menu
     document.addEventListener('contextmenu', function(e) {
