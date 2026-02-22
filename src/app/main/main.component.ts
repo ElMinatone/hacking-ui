@@ -62,6 +62,21 @@ export class MainComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.startLoader();
+
+    window.addEventListener('message', (event) => {
+
+      if (!event.data) return;
+
+      // Evento vindo do Lua
+      if (event.data.action === 'startHack') {
+        this.resetGame();
+      }
+
+      if (event.data.action === 'forceClose') {
+        this.resetGame();
+      }
+
+    });
   }
 
   ngOnDestroy(): void {
@@ -129,6 +144,13 @@ export class MainComponent implements OnInit, OnDestroy {
     this.remainingMs = this.roundDurationMs;
     this.lastTargetFingerprint = null;
     this.gridCards = [];
+
+    const audio = document.getElementById('backgroundSound') as HTMLAudioElement;
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+    }
     
     // Start the loader again
     this.startLoader();
