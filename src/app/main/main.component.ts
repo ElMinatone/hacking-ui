@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ModalService } from '../modal.service';
 
 type GridCard = {
   fpIndex: number;
@@ -21,8 +22,6 @@ export class MainComponent implements OnInit, OnDestroy {
     'https://lh3.googleusercontent.com/aida-public/AB6AXuB8HL0hAQ5kPMCaPhDpOw-l0oH77pzxkxOY1FcpUv_LcjB8ZKRazm_xNKElXXIP47k_5B_sMEGXx2_85EHcWrQnv4tZZJRU9iz3VXZbegL3t2uAN3JbD7DIzwhvym2mISs_1zdohpCfrb17QcUgtE2kIkrqvmWVnvTCoT_HrOlNLMeTpWSh3dXUlio0Y-IGVaSHQ_brYeh8aC_AwWYa0WdjDhdBZ2xZmI128VdyKwygP15or_b8_MLL-6lxIVVxp0ehwRASBncTP6Y',
     'https://lh3.googleusercontent.com/aida-public/AB6AXuD2dDE2HW_h7ELzax5KKS01EUpQ6wTViXC9NDhJbNMjsRUMuyZZb3RUhcQdRVdJMn_qlePituKqdSX2AazOus4QncaFY47x14Bo8bqxu0g75JuWBGUwOHRn3QEVIfUXncIoJp08XrFspsdQjGZoqFFzwEIl1uxufWViU5BVnza4D7HufSsjMpvF2tLfcNkO5IKf3oToUIEekddjKN7sx_Xa59MzreSubRDvlv2pgrnPAW_JLFtoeLM9--br7auanqHSTlBwbQUkNE4',
     'https://lh3.googleusercontent.com/aida-public/AB6AXuCkVwK4w6gVJRx709ekEk7nEIykukBlTXScE38xdR6CrR1VOyIRNJMcTFmrfyqaGkt_sH_DxvXkd6iM5O1Cwdsv0J65NwIERCUYALNgcs_fG7PXzgnxmb-lB5w95bvN64Ecqg1xIaaf0xXHt1LNM9wG1UVVElK8167IMKwi9kmpvASLfH387suSI8d7ZAcXzSQ6ZbENhUqyfgmebBssf20zx-nXBgjuGGykqne56oWj-uj143Sp2rcWw4cz8GJT_K5G2zWvdMih4dE',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuA6LK7mVIOUshw_YH2xViNDp-sTZwPkrmrNRvXSieji_dpk_hHVqNAtDDMrpsuHZiAm9be6ba6Mk2OHV0sx2TRdloKZhQJJaZlcfjoKgRZ9bhO95Oz4vRCDJ0IOHzGwcW5eUPRuAXQsq2JTSQZaUWLz-a7JCH2PikN9kCHzLeSZWdNjw_sbcE6OHstFPlyIsYPH2xQ0rybIqB2xEnTXVumRZ3aBLd83Qc4oc8AqAIJq14_KiLDbDVybepFUwBhn1121S_YGrqKkEaM',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuB6crBBICIEKDO904Kls6SXhJParGaNiA1zlf2EMmxKzlpB2yxOiqo_QNJU3jOkXnvGrnnwg0p7Rp2TcRMAdnE6N_43m1dJ6-qo0z8yMye1n0BBu6Efe1RkVbgAFhc6Ic7mgbRWC0I9FE0Qop35TJ4mYxxGz_5Nu1sr-2tuWVoMj_J-uoI1ihRyezmuH7E_iueZ8fv_h9h5YyB2viRW31lHqBxL3PKmMfadlaYztbM0O4C3Me7gCr2lcS2AEyolDS2uhbnaj4BaGqs'
   ];
 
   protected targetFingerprint = 0;
@@ -34,14 +33,16 @@ export class MainComponent implements OnInit, OnDestroy {
   protected readonly requiredProgress = 5;
   protected isCompleted = false;
 
+  protected totalAttempts = 3;
+  protected usedAttempts = 0;
+
   protected isLoading = true;
+  protected isGameOver = false;
   protected loaderProgress = 0;
 
   protected correctGridIndices = new Set<number>();
-  protected wrongGridIndex: number | null = null;
 
-  protected selectedGridIndex: number | null = null;
-  protected hasSelection = false;
+  protected clickedGridIndices = new Set<number>();
 
   private timerIntervalId: number | null = null;
   private loaderIntervalId: number | null = null;
@@ -49,6 +50,8 @@ export class MainComponent implements OnInit, OnDestroy {
   private readonly roundDurationMs = 60_000;
   private roundEndsAt = 0;
   private remainingMs = this.roundDurationMs;
+
+  constructor(private modalService: ModalService) {}
 
   ngOnInit(): void {
     this.startLoader();
@@ -62,8 +65,7 @@ export class MainComponent implements OnInit, OnDestroy {
   protected onCardClick(card: GridCard): void {
     if (!this.isPlaying) return;
 
-    this.selectedGridIndex = card.gridIndex;
-    this.hasSelection = true;
+    this.clickedGridIndices.add(card.gridIndex);
 
     if (card.fpIndex === this.targetFingerprint) {
       if (!this.correctGridIndices.has(card.gridIndex)) {
@@ -77,12 +79,8 @@ export class MainComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.wrongGridIndex = card.gridIndex;
-    window.setTimeout(() => {
-      if (this.wrongGridIndex === card.gridIndex) {
-        this.wrongGridIndex = null;
-      }
-    }, 500);
+    // Wrong click: consume attempt
+    this.consumeAttempt();
   }
 
   protected getTimerText(): string {
@@ -107,10 +105,8 @@ export class MainComponent implements OnInit, OnDestroy {
 
     this.isPlaying = true;
     this.correctGridIndices.clear();
-    this.wrongGridIndex = null;
 
-    this.selectedGridIndex = null;
-    this.hasSelection = false;
+    this.clickedGridIndices.clear();
 
     this.roundEndsAt = Date.now() + this.roundDurationMs;
     this.remainingMs = this.roundDurationMs;
@@ -152,11 +148,41 @@ export class MainComponent implements OnInit, OnDestroy {
 
     if (this.isCompleted) return;
 
+    // Timeout: just reset round, don't consume attempt
+    this.resetRound();
+  }
+
+  private resetRound(): void {
+    this.stopTimer();
+    this.isPlaying = false;
+    this.correctGridIndices.clear();
+    this.clickedGridIndices.clear();
+    this.remainingMs = this.roundDurationMs;
+
     this.setupNewRound();
+  }
+
+  private consumeAttempt(): void {
+    this.usedAttempts++;
+
+    if (this.usedAttempts >= this.totalAttempts) {
+      // No more attempts: game over
+      this.isGameOver = true;
+      setTimeout(() => {
+        this.isGameOver = false;
+        // Restart from loader
+        this.startLoader();
+      }, 5000);
+    } else {
+      // Still have attempts: reset round
+      this.resetRound();
+    }
   }
 
   private setupNewRound(): void {
     if (this.isCompleted) return;
+
+    this.clickedGridIndices.clear();
 
     this.targetFingerprint = Math.floor(Math.random() * this.fingerprints.length);
 
@@ -183,9 +209,11 @@ export class MainComponent implements OnInit, OnDestroy {
 
   private startLoader(): void {
     this.isLoading = true;
+    this.isGameOver = false;
     this.loaderProgress = 0;
     this.isCompleted = false;
     this.progress = 0;
+    this.usedAttempts = 0;
 
     this.stopLoader();
     const durationMs = 2200;
