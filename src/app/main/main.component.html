@@ -43,8 +43,6 @@
             <img
               [attr.alt]="'Fingerprint fragment ' + (card.gridIndex + 1)"
               class="w-full h-full max-h-16 object-cover mix-blend-screen grayscale invert brightness-200 contrast-200 scale-[1.12] transition-transform duration-200"
-              [class.opacity-80]="card.gridIndex === 0"
-              [class.opacity-60]="card.gridIndex !== 0"
               [class.group-hover:opacity-100]="card.gridIndex !== 0"
               [style.opacity]="getCardOpacity(card)"
               [src]="fingerprints[card.fpIndex]"
@@ -160,5 +158,5 @@
     </div>
   </div>
 
-  <app-access-denied-modal [visible]="isGameOver"></app-access-denied-modal>
+  <app-access-denied-modal [visible]="isGameOver" (modalClosed)="onGameOver()"></app-access-denied-modal>
 </div>

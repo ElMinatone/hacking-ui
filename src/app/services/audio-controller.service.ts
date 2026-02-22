@@ -8,10 +8,11 @@ export class AudioController {
   private volumes: Map<string, number> = new Map();
 
   constructor() {
-    this.initializeAudio('background', 'sounds/background.mp3', 0.25);
-    this.initializeAudio('click-success', 'sounds/click-success.mp3', 0.5);
-    this.initializeAudio('click-wrong', 'sounds/click-wrong.mp3', 0.5);
+    this.initializeAudio('background', 'sounds/background.mp3', 0.22);
+    this.initializeAudio('click-success', 'sounds/click-success.mp3', 0.16);
+    this.initializeAudio('click-wrong', 'sounds/click-wrong.mp3', 0.6);
     this.initializeAudio('failure', 'sounds/failure.mp3', 0.7);
+    this.initializeAudio('victory', 'sounds/victory.mp3', 0.8);
   }
 
   private initializeAudio(name: string, src: string, defaultVolume: number): void {

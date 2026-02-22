@@ -102,7 +102,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   protected getCardOpacity(card: GridCard): string {
-    if (card.gridIndex === 0) return '0.8';
+    // if (card.gridIndex === 0) return '0.8';
     if (this.isCardCorrect(card)) return '1';
     return '0.6';
   }
@@ -153,17 +153,20 @@ export class MainComponent implements OnInit, OnDestroy {
       this.stopTimer();
       this.isPlaying = false;
 
-      // Play success sound
-      this.audioController.play('click-success');
+      // Play victory sound for final completion
+      this.audioController.play('victory');
 
-      // Send success result
-      fetch(`https://${(window as any).GetParentResourceName()}/hackResult`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          result: 'success'
-        })
-      });
+      // Send success result after 3 seconds
+      setTimeout(() => {
+        console.log('Sending success result');
+        fetch(`https://${(window as any).GetParentResourceName()}/hackResult`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            result: 'success'
+          })
+        });
+      }, 3000);
 
       // Wait 2 seconds then hide completion modal
       setTimeout(() => {
@@ -179,7 +182,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this.setupNewRound();
   }
 
-  private onGameOver(): void {
+  onGameOver(): void {
     this.stopTimer();
     this.isPlaying = false;
 
@@ -211,21 +214,24 @@ export class MainComponent implements OnInit, OnDestroy {
   private consumeAttempt(): void {
     this.usedAttempts++;
 
-    // Play wrong click sound
+    // Play wrong click sound immediately
     this.audioController.play('click-wrong');
 
     if (this.usedAttempts >= this.totalAttempts) {
       // No more attempts: show access denied modal immediately
       this.isGameOver = true;
       
-      // Send failed result
-      fetch(`https://${(window as any).GetParentResourceName()}/hackResult`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          result: 'failed'
-        })
-      });
+      // Send failed result after 3 seconds
+      setTimeout(() => {
+        console.log('Sending failed result');
+        fetch(`https://${(window as any).GetParentResourceName()}/hackResult`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            result: 'failed'
+          })
+        });
+      }, 3000);
 
       setTimeout(() => {
         this.isGameOver = false;

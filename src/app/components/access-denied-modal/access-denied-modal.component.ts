@@ -20,17 +20,17 @@ import { AudioController } from '../../services/audio-controller.service';
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
             </svg>
           </div>
-          <h2 class="text-6xl font-display text-red-500 tracking-tighter relative glitch-text">
+          <h2 class="text-6xl font-display text-red-500 tracking-tighter relative glitch-text" [style.animation]="visible ? 'glitch1 2s infinite, glitch2 3s infinite 0.75s, glitch3 4s infinite 1s, glitch4 2s infinite 1.5s' : 'none'">
             ACCESS DENIED
-            <span class="absolute inset-0 text-cyan-400 opacity-50 blur-sm animate-pulse">ACCESS DENIED</span>
+            <span class="absolute inset-0 text-cyan-400 opacity-50 blur-sm animate-pulse" [style.animation]="visible ? 'glitch2 3s infinite 0.75s, glitch3 4s infinite 1.25s' : 'none'">ACCESS DENIED</span>
           </h2>
-          <p class="text-red-400 text-sm uppercase tracking-wider underline">INTRUSION DETECTED</p>
-          <p class="text-red-300 text-xs leading-relaxed">
+          <p class="text-red-400 text-sm uppercase tracking-wider underline" [style.animation]="visible ? 'glitch2 3s infinite 0.75s, glitch3 4s infinite 1.5s' : 'none'">INTRUSION DETECTED</p>
+          <p class="text-red-300 text-xs leading-relaxed" [style.animation]="visible ? 'glitch3 4s infinite 1s, glitch4 2s infinite 1.5s' : 'none'">
             Unauthorized access attempt recorded from remote node.<br>
             Local encryption keys have been purged. System lockdown<br>
             protocol X-RAY-9 initiated.
           </p>
-          <p class="text-red-400 text-xs mt-4">
+          <p class="text-red-400 text-xs mt-4" [style.animation]="visible ? 'glitch4 2s infinite 1.5s, glitch1 2s infinite 2s' : 'none'">
             Node ID: 218.45.1.99 | Trace Level: Critical
           </p>
           <div class="space-y-2 mt-6">
@@ -65,6 +65,22 @@ import { AudioController } from '../../services/audio-controller.service';
   styles: [`
     .glitch-text {
       text-shadow: 2px 0 #ef4444, -2px 0 #00FFD1;
+      animation: glitch1 2s infinite;
+    }
+    
+    @keyframes glitch1 {
+      0%, 100% {
+        text-shadow: 2px 0 #ef4444, -2px 0 #00FFD1;
+      }
+      25% {
+        text-shadow: -2px 0 #ef4444, 2px 0 #00FFD1;
+      }
+      50% {
+        text-shadow: 2px 0 #00FFD1, -2px 0 #ef4444;
+      }
+      75% {
+        text-shadow: -2px 0 #00FFD1, 2px 0 #ef4444;
+      }
     }
     
     @keyframes windowOpen {
@@ -77,6 +93,72 @@ import { AudioController } from '../../services/audio-controller.service';
         opacity: 1;
       }
     }
+    
+    @keyframes glitch2 {
+      0%, 100% {
+        transform: translate(0);
+      }
+      20% {
+        transform: translate(-2px, 2px);
+      }
+      40% {
+        transform: translate(-2px, -2px);
+      }
+      60% {
+        transform: translate(2px, 2px);
+      }
+      80% {
+        transform: translate(2px, -2px);
+      }
+    }
+    
+    @keyframes glitch3 {
+      0%, 100% {
+        filter: hue-rotate(0deg);
+      }
+      25% {
+        filter: hue-rotate(90deg);
+      }
+      50% {
+        filter: hue-rotate(180deg);
+      }
+      75% {
+        filter: hue-rotate(270deg);
+      }
+    }
+    
+    @keyframes glitch4 {
+      0%, 100% {
+        opacity: 1;
+      }
+      10% {
+        opacity: 0.8;
+      }
+      20% {
+        opacity: 1;
+      }
+      30% {
+        opacity: 0.9;
+      }
+      40% {
+        opacity: 0.7;
+      }
+      50% {
+        opacity: 1;
+      }
+      60% {
+        opacity: 0.6;
+      }
+      70% {
+        opacity: 1;
+      }
+      80% {
+        opacity: 0.4;
+      }
+      90% {
+        opacity: 1;
+      }
+    }
   `]
 })
 export class AccessDeniedModalComponent {
@@ -84,6 +166,7 @@ export class AccessDeniedModalComponent {
   @Output() closeModal = new EventEmitter<void>();
   @Output() exitTerminal = new EventEmitter<void>();
   @Output() runDiagnostics = new EventEmitter<void>();
+  @Output() modalClosed = new EventEmitter<void>();
 
   constructor(private audioController: AudioController) {}
 
@@ -101,6 +184,7 @@ export class AccessDeniedModalComponent {
 
   onCloseModal(): void {
     this.closeModal.emit();
+    this.modalClosed.emit();
   }
 
   onExitTerminal(): void {
