@@ -1,0 +1,12 @@
+// Loader Modal Component Styles
+// All styles are inherited from app.scss
+
+// Additional styles specific to loader modal if needed
+.loader-modal {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.loader-modal-active {
+  opacity: 1;
+  pointer-events: auto;
+}

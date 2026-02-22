@@ -1,0 +1,145 @@
+<div class="bg-background-dark text-primary min-h-screen flex items-center justify-center p-4 font-mono overflow-hidden">
+  <div class="w-full max-w-5xl border-2 border-primary bg-terminal-bg relative shadow-[0_0_30px_rgba(31,244,207,0.2)]">
+    <div class="bg-primary flex justify-between items-center px-4 py-1">
+      <h1 class="text-background-dark font-display font-bold uppercase tracking-widest text-sm">
+        Replicate Target
+      </h1>
+      <div class="flex gap-4">
+        <span class="text-background-dark font-bold cursor-pointer hover:opacity-70">Exit</span>
+        <span class="text-background-dark font-bold cursor-pointer hover:opacity-70">X</span>
+      </div>
+    </div>
+
+    <div class="p-8 terminal-grid flex flex-col md:flex-row gap-8 min-h-[500px]">
+      <div class="flex-1 space-y-8">
+        <div class="space-y-2">
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 bg-primary"></div>
+            <span class="text-primary text-xs uppercase tracking-widest">Time</span>
+          </div>
+          <div class="text-6xl font-display text-primary tracking-tighter flicker">
+            {{ getTimerText() }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-5 max-w-md">
+          <div
+            class="fingerprint-card aspect-square border-2 border-primary p-2 relative cursor-pointer"
+            *ngFor="let card of gridCards"
+            [class.correct]="isCardCorrect(card)"
+            [class.wrong]="wrongGridIndex === card.gridIndex"
+            [class.selected]="hasSelection && selectedGridIndex === card.gridIndex"
+            [class.border]="card.gridIndex !== 0"
+            [class.border-primary/40]="card.gridIndex !== 0"
+            [class.hover:border-primary]="card.gridIndex !== 0"
+            [class.group]="card.gridIndex !== 0"
+            (click)="onCardClick(card)"
+          >
+            <ng-container *ngIf="hasSelection && selectedGridIndex === card.gridIndex">
+              <div class="absolute -top-1 -left-1 w-2 h-2 bg-primary"></div>
+              <div class="absolute -top-1 -right-1 w-2 h-2 bg-primary"></div>
+              <div class="absolute -bottom-1 -left-1 w-2 h-2 bg-primary"></div>
+              <div class="absolute -bottom-1 -right-1 w-2 h-2 bg-primary"></div>
+            </ng-container>
+            <img
+              [attr.alt]="'Fingerprint fragment ' + (card.gridIndex + 1)"
+              class="w-full h-full object-cover mix-blend-screen grayscale invert brightness-200 contrast-200 scale-[1.12] transition-transform duration-200"
+              [class.opacity-80]="card.gridIndex === 0"
+              [class.opacity-60]="card.gridIndex !== 0"
+              [class.group-hover:opacity-100]="card.gridIndex !== 0"
+              [style.opacity]="getCardOpacity(card)"
+              [src]="fingerprints[card.fpIndex]"
+            />
+          </div>
+        </div>
+
+        <div class="text-primary/70 text-xs space-y-2 pt-4 max-w-sm">
+          <p>Find the copies of the fingerprint you need.</p>
+          <p class="flex items-start gap-2">
+            <span class="text-primary font-bold">&gt;</span>
+            <span>You are presented with only 4 activation attempts.</span>
+          </p>
+          <p class="flex items-start gap-2">
+            <span class="text-primary font-bold">&gt;</span>
+            <span>After the time expires, access will be blocked for 24 hours.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="flex-1 flex flex-col">
+        <div class="border border-primary/40 flex-1 relative overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-1 bg-primary/40"></div>
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 px-4 py-1 bg-terminal-bg border border-primary/40 border-t-0 z-10">
+            <span class="text-primary text-[10px] uppercase tracking-widest whitespace-nowrap">Fingerprint</span>
+          </div>
+          <div class="absolute top-8 left-8 w-6 h-6 border-t-2 border-l-2 border-primary"></div>
+          <div class="absolute top-8 right-8 w-6 h-6 border-t-2 border-r-2 border-primary"></div>
+          <div class="absolute bottom-16 left-8 w-6 h-6 border-b-2 border-l-2 border-primary"></div>
+          <div class="absolute bottom-16 right-8 w-6 h-6 border-b-2 border-r-2 border-primary"></div>
+
+          <div class="absolute inset-0 flex items-center justify-center p-12">
+            <div class="relative w-full h-full max-w-[300px] flex items-center justify-center">
+              <img
+                alt="Target Fingerprint"
+                class="max-h-full opacity-80 mix-blend-screen grayscale invert brightness-200 contrast-200"
+                [src]="fingerprints[targetFingerprint]"
+              />
+              <div class="scan-line"></div>
+            </div>
+          </div>
+
+          <div class="absolute bottom-6 right-8 flex items-center gap-4">
+            <span class="text-primary text-xs uppercase tracking-widest opacity-70">Progress</span>
+            <div class="flex gap-2">
+              <div
+                class="w-4 h-4 border border-primary flex items-center justify-center"
+                *ngFor="let n of [1, 2, 3, 4, 5]"
+              >
+                <div class="w-2.5 h-2.5 bg-primary" *ngIf="n <= progress"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-primary/20 p-2 px-8 flex justify-between items-center text-[10px] text-primary/40">
+      <div class="flex gap-6">
+        <span>SYSTEM: ONLINE</span>
+        <span>DECRYPT: 24%</span>
+        <span>SECURITY: HIGH</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="bg-primary/10 px-2 py-0.5 text-primary border border-primary/20">ESC</span>
+        <span>BACK</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fixed inset-0 pointer-events-none opacity-10">
+    <div class="absolute top-10 left-10 text-primary text-xs">KERNEL_ROOT_ACCESS: GRANTED</div>
+    <div class="absolute bottom-10 right-10 text-primary text-xs">UPLINK_STABLE: 124.5 MS</div>
+  </div>
+
+  <div class="fixed inset-0 bg-terminal-bg/85 flex items-center justify-center z-40" *ngIf="isCompleted">
+    <div class="w-[600px] border border-primary p-6 bg-terminal-bg shadow-[0_0_50px_rgba(31,244,207,0.25)] text-center space-y-4">
+      <div class="text-primary text-xs uppercase tracking-[0.35em]">Progress Complete</div>
+      <div class="text-5xl font-display text-primary tracking-widest glitch-text">ACCESS GRANTED</div>
+      <div class="text-primary/70 text-xs uppercase tracking-widest">5/5</div>
+    </div>
+  </div>
+
+  <div class="fixed inset-0 bg-terminal-bg/80 flex items-center justify-center z-50" *ngIf="isLoading">
+    <div class="w-96 border border-primary p-px bg-terminal-bg shadow-[0_0_50px_rgba(31,244,207,0.3)]">
+      <div class="bg-primary px-2 py-1 text-center">
+        <span class="text-background-dark text-xs font-bold tracking-[0.2em] uppercase">Fingerprint Analysis</span>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="text-primary text-center tracking-[0.3em] font-display text-lg uppercase flicker">Processing</div>
+        <div class="h-8 border border-primary relative overflow-hidden bg-black">
+          <div class="absolute top-0 left-0 bottom-0 bg-primary/60 transition-all duration-100 ease-linear" [style.width.%]="loaderProgress"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<div class="fixed inset-0 bg-terminal-bg/80 flex items-center justify-center z-50 pointer-events-none opacity-0 transition-opacity duration-300"
+     [class.opacity-100]="isVisible"
+     [class.pointer-events-auto]="isVisible">
+    <div class="w-96 border border-primary p-px bg-terminal-bg shadow-[0_0_50px_rgba(31,244,207,0.3)]">
+        <div class="bg-primary px-2 py-1 text-center">
+            <span class="text-background-dark text-xs font-bold tracking-[0.2em] uppercase">{{ title }}</span>
+        </div>
+        <div class="p-6 space-y-4">
+            <div class="text-primary text-center tracking-[0.3em] font-display text-lg uppercase flicker">{{ message }}</div>
+            <div class="h-8 border border-primary relative overflow-hidden bg-black">
+                <div class="absolute top-0 left-0 bottom-0 bg-primary/60 transition-all duration-500 ease-out"
+                     [style.width.%]="progress"></div>
+            </div>
+        </div>
+    </div>
+</div>

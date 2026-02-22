@@ -1,11 +1,35 @@
 <!doctype html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
   <meta charset="utf-8">
   <title>Hacking</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1ff4cf',
+            'background-light': '#e2e8f0',
+            'background-dark': '#050a0a',
+            'terminal-bg': '#0a1414'
+          },
+          fontFamily: {
+            display: ['Orbitron', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          },
+          borderRadius: {
+            DEFAULT: '0px'
+          }
+        }
+      }
+    };
+  </script>
 </head>
 <body>
   <app-root></app-root>
