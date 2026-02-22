@@ -107,6 +107,33 @@ export class MainComponent implements OnInit, OnDestroy {
     return '0.6';
   }
 
+  // Reset game function - restarts the entire game from the beginning
+  protected resetGame(): void {
+    this.stopTimer();
+    this.stopLoader();
+    
+    // Reset all game states
+    this.progress = 0;
+    this.usedAttempts = 0;
+    this.isPlaying = false;
+    this.isGameOver = false;
+    this.isCompleted = false;
+    this.loaderProgress = 0;
+    this.isLoading = true;
+    
+    // Clear all sets
+    this.correctGridIndices.clear();
+    this.clickedGridIndices.clear();
+    
+    // Reset timer and rounds
+    this.remainingMs = this.roundDurationMs;
+    this.lastTargetFingerprint = null;
+    this.gridCards = [];
+    
+    // Start the loader again
+    this.startLoader();
+  }
+
   private startGame(): void {
     if (this.isPlaying) return;
 

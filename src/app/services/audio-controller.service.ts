@@ -13,6 +13,13 @@ export class AudioController {
     this.initializeAudio('click-wrong', 'sounds/click-wrong.mp3', 0.6);
     this.initializeAudio('failure', 'sounds/failure.mp3', 0.7);
     this.initializeAudio('victory', 'sounds/victory.mp3', 0.8);
+
+    // Segurança extra: monitora visibilidade
+    setInterval(() => {
+      if (!(window as any).__NUI_VISIBLE) {
+        this.stopAll();
+      }
+    }, 300);
   }
 
   private initializeAudio(name: string, src: string, defaultVolume: number): void {
@@ -24,20 +31,27 @@ export class AudioController {
 
   play(name: string): void {
     const audio = this.audioElements.get(name);
-    if (audio) {
+    if (!audio) return;
+
+    // 🔒 Bloqueia se NUI invisível
+    if (!(window as any).__NUI_VISIBLE) {
+      audio.pause();
       audio.currentTime = 0;
-      audio.play().catch(error => {
-        console.error(`Error playing audio ${name}:`, error);
-      });
+      return;
     }
+
+    audio.currentTime = 0;
+    audio.play().catch(error => {
+      console.error(`Error playing audio ${name}:`, error);
+    });
   }
 
   setVolume(name: string, volume: number): void {
     const audio = this.audioElements.get(name);
-    if (audio) {
-      audio.volume = Math.max(0, Math.min(1, volume));
-      this.volumes.set(name, audio.volume);
-    }
+    if (!audio) return;
+
+    audio.volume = Math.max(0, Math.min(1, volume));
+    this.volumes.set(name, audio.volume);
   }
 
   getVolume(name: string): number {
@@ -52,14 +66,14 @@ export class AudioController {
 
   stop(name: string): void {
     const audio = this.audioElements.get(name);
-    if (audio) {
-      audio.pause();
-      audio.currentTime = 0;
-    }
+    if (!audio) return;
+
+    audio.pause();
+    audio.currentTime = 0;
   }
 
   stopAll(): void {
-    this.audioElements.forEach((audio) => {
+    this.audioElements.forEach(audio => {
       audio.pause();
       audio.currentTime = 0;
     });

@@ -1,5 +1,6 @@
 <!doctype html>
 <html class="dark" lang="en">
+
 <head>
   <meta charset="utf-8">
   <title>Hacking</title>
@@ -7,7 +8,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap"
+    rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script>
     tailwind.config = {
@@ -32,30 +35,54 @@
     };
   </script>
 </head>
-<body style="user-select: none;">
-  <audio id="backgroundSound" autoplay loop>
-    <source src="sounds/background.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
+
+<body style="display:none; user-select:none;">
+
   <script>
-    // Audio volumes configuration
-    window.audioVolumes = {
-      'background': 0.22,
-      'click-success': 0.16,
-      'click-wrong': 0.6,
-      'failure': 0.7,
-      'victory': 0.8
-    };
-    
-    const audio = document.getElementById('backgroundSound');
-    audio.volume = window.audioVolumes['background'];
-    
-    // Block right-click context menu
-    document.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-      return false;
+    // Flag global controlando visibilidade
+    window.__NUI_VISIBLE = false;
+
+    function showNui() {
+      window.__NUI_VISIBLE = true;
+
+      document.body.style.display = "block";
+      document.body.classList.add("visible");
+
+      // Reinicia todos audios nativos se existirem
+      document.querySelectorAll("audio").forEach(a => {
+        a.pause();
+        a.currentTime = 0;
+      });
+    }
+
+    function hideNui() {
+      window.__NUI_VISIBLE = false;
+
+      document.body.classList.remove("visible");
+      document.body.style.display = "none";
+
+      // Mata todos audios da página
+      document.querySelectorAll("audio").forEach(a => {
+        a.pause();
+        a.currentTime = 0;
+      });
+    }
+
+    window.addEventListener("message", function (event) {
+      if (!event.data) return;
+
+      if (event.data.action === "startHack") {
+        showNui();
+      }
+
+      if (event.data.action === "forceClose") {
+        hideNui();
+      }
     });
   </script>
+
   <app-root></app-root>
+
 </body>
+
 </html>
